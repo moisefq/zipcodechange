@@ -3,126 +3,142 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZIP Price Lookup</title>
+  <title>ZIP Price Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body>
-
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-inner">
-      <div class="logo">
-        <div class="logo-mark">📍</div>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">📍</div>
         <div>
-          <div class="logo-title">ZIP Price Lookup</div>
-          <div class="logo-sub">Search pricing by ZIP code or city</div>
+          <div class="brand-title">ZIP Price Dashboard</div>
+          <div class="brand-subtitle">Edit prices, manage ZIP records, and export for GitHub</div>
         </div>
       </div>
-      <div class="header-stats" id="headerStats">
-        <div class="stat-pill" id="totalCount">— ZIPs loaded</div>
+
+      <div class="topbar-actions">
+        <button class="btn btn-secondary" id="importBtn">Import JSON</button>
+        <button class="btn btn-secondary" id="exportBtn">Export JSON</button>
+        <button class="btn btn-secondary" id="resetBtn">Reset Data</button>
+        <button class="btn btn-primary" id="addBtn">Add ZIP</button>
+        <input type="file" id="importInput" accept="application/json" hidden />
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Total ZIPs</span>
+          <span class="stat-value" id="statTotal">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Average Price</span>
+          <span class="stat-value" id="statAvg">$0.00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Lowest Price</span>
+          <span class="stat-value" id="statMin">$0.00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Highest Price</span>
+          <span class="stat-value" id="statMax">$0.00</span>
+        </div>
+      </section>
+
+      <section class="controls">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" class="search-icon" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input id="searchInput" type="text" placeholder="Search ZIP or city..." />
+          <button id="clearSearch" class="clear-btn" title="Clear search">×</button>
+        </div>
+
+        <select id="sortSelect" class="select">
+          <option value="zip-asc">ZIP ↑</option>
+          <option value="zip-desc">ZIP ↓</option>
+          <option value="city-asc">City A–Z</option>
+          <option value="city-desc">City Z–A</option>
+          <option value="price-asc">Price ↑</option>
+          <option value="price-desc">Price ↓</option>
+        </select>
+
+        <select id="priceFilter" class="select">
+          <option value="all">All Prices</option>
+          <option value="under16">Under $16</option>
+          <option value="16to17">$16 – $17</option>
+          <option value="17to18">$17 – $18</option>
+          <option value="over18">Over $18</option>
+        </select>
+      </section>
+
+      <section class="table-card">
+        <div class="table-header">
+          <div>
+            <h2>ZIP Records</h2>
+            <p id="resultCount">0 results</p>
+          </div>
+          <div class="table-hint">Double-click price to edit quickly</div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ZIP</th>
+                <th>City</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h3 id="modalTitle">Add ZIP</h3>
+          <p id="modalSubtitle">Create or update a ZIP record</p>
+        </div>
+        <button class="icon-btn" id="closeModal">×</button>
+      </div>
+
+      <div class="modal-body">
+        <label class="field">
+          <span>ZIP Code</span>
+          <input id="zipInput" type="text" maxlength="5" placeholder="e.g. 00601" />
+        </label>
+
+        <label class="field">
+          <span>City</span>
+          <input id="cityInput" type="text" placeholder="e.g. Adjuntas" />
+        </label>
+
+        <label class="field">
+          <span>Price</span>
+          <input id="priceInput" type="number" step="0.01" min="0" placeholder="e.g. 17.69" />
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancelModal">Cancel</button>
+        <button class="btn btn-primary" id="saveModal">Save</button>
       </div>
     </div>
-  </header>
+  </div>
 
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- SEARCH PANEL -->
-    <section class="search-panel">
-      <div class="search-row">
-        <div class="search-box-wrap" id="searchWrap">
-          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input
-            id="searchInput"
-            type="text"
-            placeholder="Search by ZIP code or city name…"
-            autocomplete="off"
-          />
-          <button class="clear-btn" id="clearBtn" title="Clear">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-
-        <div class="filter-group">
-          <select id="sortSelect" class="filter-select">
-            <option value="zip-asc">ZIP ↑</option>
-            <option value="zip-desc">ZIP ↓</option>
-            <option value="price-asc">Price ↑</option>
-            <option value="price-desc">Price ↓</option>
-            <option value="city-asc">City A–Z</option>
-            <option value="city-desc">City Z–A</option>
-          </select>
-
-          <select id="priceFilter" class="filter-select">
-            <option value="all">All Prices</option>
-            <option value="under16">Under $16</option>
-            <option value="16to17">$16 – $17</option>
-            <option value="17to18">$17 – $18</option>
-            <option value="over18">Over $18</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Stats Bar -->
-      <div class="stats-bar" id="statsBar">
-        <span id="resultCount">0 results</span>
-        <span class="stats-sep">·</span>
-        <span id="avgPrice">Avg: —</span>
-        <span class="stats-sep">·</span>
-        <span id="minPrice">Min: —</span>
-        <span class="stats-sep">·</span>
-        <span id="maxPrice">Max: —</span>
-      </div>
-    </section>
-
-    <!-- RESULTS -->
-    <section class="results-section">
-
-      <!-- Single result card (when exact ZIP match) -->
-      <div class="spotlight-card" id="spotlightCard" style="display:none">
-        <div class="spotlight-inner">
-          <div class="spotlight-left">
-            <div class="spotlight-zip" id="spotZip"></div>
-            <div class="spotlight-city" id="spotCity"></div>
-          </div>
-          <div class="spotlight-price" id="spotPrice"></div>
-        </div>
-        <div class="spotlight-badge">Exact Match</div>
-      </div>
-
-      <!-- Table -->
-      <div class="table-wrap">
-        <table class="data-table" id="dataTable">
-          <thead>
-            <tr>
-              <th class="sortable" data-col="zip">ZIP Code <span class="sort-arrow">↕</span></th>
-              <th class="sortable" data-col="city">City <span class="sort-arrow">↕</span></th>
-              <th class="sortable" data-col="price">Price <span class="sort-arrow">↕</span></th>
-              <th>Badge</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-
-        <div class="empty-state" id="emptyState" style="display:none">
-          <div class="empty-icon">🔍</div>
-          <div class="empty-title">No results found</div>
-          <div class="empty-sub">Try a different ZIP code or city name</div>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div class="pagination" id="pagination"></div>
-    </section>
-
-  </main>
-
-  <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
   <script src="data.js"></script>
