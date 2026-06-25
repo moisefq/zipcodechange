@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ZIP Price Lookup</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>📦 ZIP Price Lookup</h1>
+
+        <p class="subtitle">
+            Enter your ZIP code to instantly calculate your shipping price.
+        </p>
+
+        <div class="search-box">
+
+            <input
+                id="zipInput"
+                type="text"
+                maxlength="5"
+                placeholder="Enter ZIP Code"
+            >
+
+            <button id="searchBtn">
+                Search
+            </button>
+
+        </div>
+
+        <div id="message"></div>
+
+        <div id="resultCard" class="hidden">
+
+            <div class="result-row">
+                <span>ZIP</span>
+                <strong id="zipValue"></strong>
+            </div>
+
+            <div class="result-row">
+                <span>City</span>
+                <strong id="cityValue"></strong>
+            </div>
+
+            <div class="result-row">
+                <span>Shipping Price</span>
+                <strong id="priceValue"></strong>
+            </div>
+
+            <button id="copyBtn">
+                Copy Result
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/lookup.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+
+</html>
