@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PriceCheck — ZIP Lookup</title>
+  <title>ZIP Price Lookup</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -14,32 +13,33 @@
   <header class="header">
     <div class="header-inner">
       <div class="logo">
-        <div class="logo-icon">$</div>
-        <span>PriceCheck</span>
+        <div class="logo-mark">📍</div>
+        <div>
+          <div class="logo-title">ZIP Price Lookup</div>
+          <div class="logo-sub">Search pricing by ZIP code or city</div>
+        </div>
       </div>
-      <div class="header-meta">ZIP Code Price Lookup</div>
+      <div class="header-stats" id="headerStats">
+        <div class="stat-pill" id="totalCount">— ZIPs loaded</div>
+      </div>
     </div>
   </header>
 
   <!-- MAIN -->
   <main class="main">
 
-    <!-- HERO SEARCH -->
-    <section class="hero">
-      <h1 class="hero-title">Find Your Local Price</h1>
-      <p class="hero-sub">Enter a ZIP code or city name to instantly look up the current price in your area.</p>
-
-      <div class="search-box">
-        <div class="search-input-wrap" id="searchWrap">
+    <!-- SEARCH PANEL -->
+    <section class="search-panel">
+      <div class="search-row">
+        <div class="search-box-wrap" id="searchWrap">
           <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
           <input
             id="searchInput"
             type="text"
-            placeholder="Search by ZIP or city…"
+            placeholder="Search by ZIP code or city name…"
             autocomplete="off"
-            maxlength="20"
           />
           <button class="clear-btn" id="clearBtn" title="Clear">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -47,110 +47,76 @@
             </svg>
           </button>
         </div>
-        <button class="lookup-btn" id="lookupBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          Look Up
-        </button>
-      </div>
 
-      <!-- RESULT CARD -->
-      <div class="result-card" id="resultCard">
-        <div class="result-inner" id="resultInner"></div>
-      </div>
-    </section>
-
-    <!-- STATS BAR -->
-    <section class="stats-bar" id="statsBar">
-      <div class="stat">
-        <div class="stat-val" id="statTotal">—</div>
-        <div class="stat-label">Total Entries</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-val" id="statAvg">—</div>
-        <div class="stat-label">Avg. Price</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-val" id="statMin">—</div>
-        <div class="stat-label">Lowest Price</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-val" id="statMax">—</div>
-        <div class="stat-label">Highest Price</div>
-      </div>
-    </section>
-
-    <!-- FILTERS + TABLE -->
-    <section class="table-section">
-      <div class="table-toolbar">
-        <div class="toolbar-left">
-          <h2 class="table-title">All Locations</h2>
-          <span class="table-count" id="tableCount">0 results</span>
-        </div>
-        <div class="toolbar-right">
-          <!-- Price filter -->
-          <div class="filter-wrap">
-            <label class="filter-label">Price range</label>
-            <div class="range-inputs">
-              <input type="number" id="minPrice" placeholder="Min" step="0.01" min="0" />
-              <span>–</span>
-              <input type="number" id="maxPrice" placeholder="Max" step="0.01" min="0" />
-            </div>
-          </div>
-          <!-- Sort -->
-          <select class="sort-select" id="sortSelect">
+        <div class="filter-group">
+          <select id="sortSelect" class="filter-select">
             <option value="zip-asc">ZIP ↑</option>
             <option value="zip-desc">ZIP ↓</option>
-            <option value="city-asc">City A–Z</option>
-            <option value="city-desc">City Z–A</option>
             <option value="price-asc">Price ↑</option>
             <option value="price-desc">Price ↓</option>
+            <option value="city-asc">City A–Z</option>
+            <option value="city-desc">City Z–A</option>
           </select>
-          <!-- View toggle -->
-          <div class="view-toggle">
-            <button class="vt-btn active" id="tableViewBtn" title="Table view">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-              </svg>
-            </button>
-            <button class="vt-btn" id="cardViewBtn" title="Card view">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
-                <line x1="8" y1="18" x2="21" y2="18"/>
-                <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/>
-                <line x1="3" y1="18" x2="3.01" y2="18"/>
-              </svg>
-            </button>
+
+          <select id="priceFilter" class="filter-select">
+            <option value="all">All Prices</option>
+            <option value="under16">Under $16</option>
+            <option value="16to17">$16 – $17</option>
+            <option value="17to18">$17 – $18</option>
+            <option value="over18">Over $18</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar" id="statsBar">
+        <span id="resultCount">0 results</span>
+        <span class="stats-sep">·</span>
+        <span id="avgPrice">Avg: —</span>
+        <span class="stats-sep">·</span>
+        <span id="minPrice">Min: —</span>
+        <span class="stats-sep">·</span>
+        <span id="maxPrice">Max: —</span>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="results-section">
+
+      <!-- Single result card (when exact ZIP match) -->
+      <div class="spotlight-card" id="spotlightCard" style="display:none">
+        <div class="spotlight-inner">
+          <div class="spotlight-left">
+            <div class="spotlight-zip" id="spotZip"></div>
+            <div class="spotlight-city" id="spotCity"></div>
           </div>
+          <div class="spotlight-price" id="spotPrice"></div>
+        </div>
+        <div class="spotlight-badge">Exact Match</div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table class="data-table" id="dataTable">
+          <thead>
+            <tr>
+              <th class="sortable" data-col="zip">ZIP Code <span class="sort-arrow">↕</span></th>
+              <th class="sortable" data-col="city">City <span class="sort-arrow">↕</span></th>
+              <th class="sortable" data-col="price">Price <span class="sort-arrow">↕</span></th>
+              <th>Badge</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+
+        <div class="empty-state" id="emptyState" style="display:none">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">No results found</div>
+          <div class="empty-sub">Try a different ZIP code or city name</div>
         </div>
       </div>
 
-      <!-- TABLE VIEW -->
-      <div id="tableView">
-        <div class="table-wrap">
-          <table class="data-table" id="dataTable">
-            <thead>
-              <tr>
-                <th class="sortable" data-col="zip">ZIP Code <span class="sort-arrow">↕</span></th>
-                <th class="sortable" data-col="city">City <span class="sort-arrow">↕</span></th>
-                <th class="sortable" data-col="price">Price <span class="sort-arrow">↕</span></th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- CARD VIEW (hidden by default) -->
-      <div id="cardView" class="card-grid hidden"></div>
-
-      <!-- PAGINATION -->
+      <!-- Pagination -->
       <div class="pagination" id="pagination"></div>
     </section>
 
