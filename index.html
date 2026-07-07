@@ -1,147 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZIP Price Dashboard</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Price Checker</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark">📍</div>
-        <div>
-          <div class="brand-title">ZIP Price Dashboard</div>
-          <div class="brand-subtitle">Edit prices, manage ZIP records, and export for GitHub</div>
+    <div class="container price-checker">
+        <h1>Check Your Price</h1>
+        <div class="input-group">
+            <label for="zipCode">Enter Zip Code:</label>
+            <input type="text" id="zipCode" placeholder="e.g., 12345">
         </div>
-      </div>
-
-      <div class="topbar-actions">
-        <button class="btn btn-secondary" id="importBtn">Import JSON</button>
-        <button class="btn btn-secondary" id="exportBtn">Export JSON</button>
-        <button class="btn btn-secondary" id="resetBtn">Reset Data</button>
-        <button class="btn btn-primary" id="addBtn">Add ZIP</button>
-        <input type="file" id="importInput" accept="application/json" hidden />
-      </div>
-    </header>
-
-    <main class="dashboard">
-      <section class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-label">Total ZIPs</span>
-          <span class="stat-value" id="statTotal">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Average Price</span>
-          <span class="stat-value" id="statAvg">$0.00</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Lowest Price</span>
-          <span class="stat-value" id="statMin">$0.00</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Highest Price</span>
-          <span class="stat-value" id="statMax">$0.00</span>
-        </div>
-      </section>
-
-      <section class="controls">
-        <div class="search-wrap">
-          <svg viewBox="0 0 24 24" class="search-icon" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
-          <input id="searchInput" type="text" placeholder="Search ZIP or city..." />
-          <button id="clearSearch" class="clear-btn" title="Clear search">×</button>
-        </div>
-
-        <select id="sortSelect" class="select">
-          <option value="zip-asc">ZIP ↑</option>
-          <option value="zip-desc">ZIP ↓</option>
-          <option value="city-asc">City A–Z</option>
-          <option value="city-desc">City Z–A</option>
-          <option value="price-asc">Price ↑</option>
-          <option value="price-desc">Price ↓</option>
-        </select>
-
-        <select id="priceFilter" class="select">
-          <option value="all">All Prices</option>
-          <option value="under16">Under $16</option>
-          <option value="16to17">$16 – $17</option>
-          <option value="17to18">$17 – $18</option>
-          <option value="over18">Over $18</option>
-        </select>
-      </section>
-
-      <section class="table-card">
-        <div class="table-header">
-          <div>
-            <h2>ZIP Records</h2>
-            <p id="resultCount">0 results</p>
-          </div>
-          <div class="table-hint">Double-click price to edit quickly</div>
-        </div>
-
-        <div class="table-wrap">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ZIP</th>
-                <th>City</th>
-                <th>Price</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-
-        <div class="pagination" id="pagination"></div>
-      </section>
-    </main>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-head">
-        <div>
-          <h3 id="modalTitle">Add ZIP</h3>
-          <p id="modalSubtitle">Create or update a ZIP record</p>
-        </div>
-        <button class="icon-btn" id="closeModal">×</button>
-      </div>
-
-      <div class="modal-body">
-        <label class="field">
-          <span>ZIP Code</span>
-          <input id="zipInput" type="text" maxlength="5" placeholder="e.g. 00601" />
-        </label>
-
-        <label class="field">
-          <span>City</span>
-          <input id="cityInput" type="text" placeholder="e.g. Adjuntas" />
-        </label>
-
-        <label class="field">
-          <span>Price</span>
-          <input id="priceInput" type="number" step="0.01" min="0" placeholder="e.g. 17.69" />
-        </label>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn btn-secondary" id="cancelModal">Cancel</button>
-        <button class="btn btn-primary" id="saveModal">Save</button>
-      </div>
+        <button id="checkButton">Check Price</button>
+        <p class="result-display">Your price: <span id="displayPrice">$10.00</span></p>
+        <p class="message" id="statusMessage"></p>
     </div>
-  </div>
 
-  <div class="toast" id="toast"></div>
+    <div class="container admin-dashboard">
+        <h2>Admin Dashboard</h2>
+        <div class="input-group">
+            <label for="adminZipCode">Zip Code:</label>
+            <input type="text" id="adminZipCode" placeholder="e.g., 12345">
+        </div>
+        <div class="input-group">
+            <label for="adminPrice">New Price:</label>
+            <input type="number" id="adminPrice" step="0.01" placeholder="e.g., 15.50">
+        </div>
+        <button id="updatePriceButton">Update Price</button>
+        <button id="setDefaultPriceButton">Set Default Price</button>
+        <div class="input-group default-price-input">
+            <label for="newDefaultPrice">New Default Price:</label>
+            <input type="number" id="newDefaultPrice" step="0.01" placeholder="e.g., 10.00">
+        </div>
+        <p class="message" id="adminStatusMessage"></p>
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+        <h3>Current Prices</h3>
+        <ul id="priceList">
+            <!-- Prices will be loaded here by JavaScript -->
+        </ul>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
